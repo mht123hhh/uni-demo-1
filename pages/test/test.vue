@@ -3,30 +3,6 @@
     <view class="title">
       <text>流量情况</text>
     </view>
-    <!-- 今日/本月流量 start -->
-    <view class="count-flow">
-      <!-- 今日流量 -->
-      <view class="dayFlowCounts">
-        <view class="dayFlow-title">
-          <text>今日流量</text>
-        </view>
-        <view class="Flow-content">
-          <text class="flow-m-r">上行：{{dayFlowCounts.upFlow}}</text>
-          <text>下行：{{dayFlowCounts.downFlow}}</text>
-        </view>
-      </view>
-      <!-- 本月流量 -->
-      <view class="monthFlowCounts">
-        <view class="monthFlow-title">
-          <text>本月流量</text>
-        </view>
-        <view class="Flow-content">
-          <text class="flow-m-r">上行：1G</text>
-          <text>下行：100G</text>
-        </view>
-      </view>
-    </view>
-    <!-- 今日/本月流量 end -->
     <uni-segmented-control :current="current" :values="items" @clickItem="onClickItem" styleType="text"
       activeColor="#007aff"></uni-segmented-control>
     <view class="content">
@@ -35,7 +11,7 @@
         <view class="day-flow">
           <view class="client-box">
             <view class="client-name">
-              宁波驰恩国际有限公司
+              哇哈哈
               {{status==='设备离线'?fullName + '  ('+ status +')':fullName}}
             </view>
           </view>
@@ -43,6 +19,7 @@
             <qiun-data-charts class="vue" type="line" :opts="opts" :chartData="chartData1" :canvas2d="true"
               loadingType=5 errorShow="true" :ontouch="true" canvasId="day-flow" />
           </view>
+          <ucharts-ring :dayCounts="dayCounts" :upCounts="upCounts1" :downCounts="downCounts1"></ucharts-ring>
         </view>
       </view>
       <!-- 一周流量 -->
@@ -57,6 +34,7 @@
             <qiun-data-charts class="vue" type="line" :opts="opts1" :chartData="chartData2" :canvas2d="true"
               loadingType=5 errorShow="true" :ontouch="true" canvasId="week-flow" />
           </view>
+          <ucharts-ring :dayCounts="weekCounts" :upCounts="upCounts2" :downCounts="downCounts2"></ucharts-ring>
         </view>
       </view>
       <!-- 一月流量 -->
@@ -71,6 +49,7 @@
             <qiun-data-charts class="vue" type="line" :opts="opts1" :chartData="chartData3" :canvas2d="true"
               loadingType=5 errorShow="true" :ontouch="true" canvasId="month-flow" />
           </view>
+          <ucharts-ring :dayCounts="monthCounts" :upCounts="upCounts3" :downCounts="downCounts3"></ucharts-ring>
         </view>
       </view>
     </view>
@@ -78,12 +57,12 @@
 </template>
 
 <script>
-  // import countObj from '@/common/calculate.js'
+  import countObj from '@/common/calculate.js'
   import dateObj from '@/common/datefilter.js'
   export default {
+    computed: {},
     data() {
       return {
-        timer: null,
         items: ['一天', '一周', '一个月'],
         current: 0,
         query1: {
@@ -107,17 +86,20 @@
         chartData1: {},
         chartData2: {},
         chartData3: {},
-        dayFlowCounts: {
-          upFlow: '',
-          downFlow: ''
-        },
-        monthFlowCounts: {
-          upFlow: '',
-          downFlow: ''
-        },
+        dayCounts: 0,
+        weekCounts: 0,
+        monthCounts: 0,
+        upCounts1: 0,
+        downCounts1: 0,
+        upCounts2: 0,
+        downCounts2: 0,
+        upCounts3: 0,
+        downCounts3: 0,
         fullName: '',
         errorShow: 'false',
         status: '',
+        // 是否宽屏
+        isLandScape: false,
         opts: {
           padding: [15, 15, 0, 5],
           legend: {
@@ -195,38 +177,38 @@
       }
     },
     watch: {
-      // dayCounts(newValue, oldValue) {
-      //   this.dayCounts = newValue
-      //   // console.log(newValue + '---' + oldValue)
-      // }
+      dayCounts(newValue, oldValue) {
+        this.dayCounts = newValue
+        // console.log(newValue + '---' + oldValue)
+      },
+      upCounts(newValue, oldValue) {
+        this.dayCounts = newValue
+      },
+      downCounts(newValue, oldValue) {
+        this.downCounts = newValue
+      }
     },
     onReady() {},
     onLoad() {
+      // 天
+      this.query1.beginTime = dateObj.dateFormat2(new Date())
+      this.query1.endTime = dateObj.dateFormat1(new Date())
+      // 周
+      this.query2.beginTime = dateObj.getWeekFormat(new Date()).monday
+      this.query2.endTime = dateObj.getWeekFormat(new Date()).sunday
+      // 月
+      this.query3.beginTime = dateObj.getMonthFirstDate()
+      this.query3.endTime = dateObj.getNextMonthFirstDate()
       this.getDayflow()
       this.getWeekflow()
       this.getMonthflow()
-      this.getDayFlowCounts()
-      // this.timer = setInterval(() => {
-      //   this.getDayflow()
-      //   // this.getWeekflow()
-      //   // this.getMonthflow()
-      //   this.getDayFlowCounts()
-      // }, 30000)
-      // this.startTimer()
-    },
-    onHide() {
-      clearInterval(this.timer)
-    },
-    onShow() {
-      this.startTimer()
+      setInterval(() => {
+        this.getDayflow()
+        this.getWeekflow()
+        this.getMonthflow()
+      }, 10000)
     },
     methods: {
-      startTimer() {
-        this.timer = setInterval(() => {
-          this.getDayflow()
-          this.getDayFlowCounts()
-        }, 30000)
-      },
       onClickItem(e) {
         if (this.current != e.currentIndex) {
           this.current = e.currentIndex;
@@ -237,26 +219,24 @@
           console.log('一周')
         } else {
           console.log('一月')
+          // this.opts.xAxis.labelCount = 7
         }
       },
       async getDayflow() {
-        // 天
-        this.query1.beginTime = dateObj.dateFormat2(new Date())
-        // this.query1.endTime = dateObj.dateFormat1(new Date())
-        // advice: 建议显示最近时间
-        this.query1.endTime = dateObj.getNowDate()
         const {
           data: res
         } =
         await uni.$http.get('/flow/newCountLine', this.query1)
-        // // 2022-06-17 22:10:33 => 2022-06-17 00:00:00
-        const date = dateObj.dateFormat2(new Date())
-        let categories = [date].concat(res.data.dateCreated)
+        let categories = ['2022-06-21 00:00:00'].concat(res.data.dateCreated)
+        this.upCounts1 = countObj.addDay(res.data.countLineFlowIn)
+        this.downCounts1 = countObj.addDay(res.data.countLineFlowOut)
+        this.dayCounts = this.upCounts1 + this.downCounts1
+        // console.log(this.dayCounts)
         console.log(res)
         if (res.code === -1) {
           this.status = res.message
           this.errorShow = true
-          return uni.$showMsg('设备离线！', 1000 * 10)
+          return uni.$showMsg('暂无数据！', 1000 * 10)
         }
         let dataObj = {
           categories: dateObj.dateFormat(categories),
@@ -273,13 +253,13 @@
         this.chartData1 = JSON.parse(JSON.stringify(dataObj));
       },
       async getWeekflow() {
-        // 周
-        this.query2.beginTime = dateObj.getWeekFormat(new Date()).monday
-        this.query2.endTime = dateObj.getWeekFormat(new Date()).sunday
         const {
           data: res
         } =
         await uni.$http.get('/flow/newCountLine', this.query2)
+        this.upCounts2 = countObj.addDay(res.data.countLineFlowIn)
+        this.downCounts2 = countObj.addDay(res.data.countLineFlowOut)
+        this.weekCounts = this.upCounts2 + this.downCounts2
         console.log(res)
         if (res.code === -1) {
           this.status = res.message
@@ -301,13 +281,13 @@
         this.chartData2 = JSON.parse(JSON.stringify(dataObj));
       },
       async getMonthflow() {
-        // 月
-        this.query3.beginTime = dateObj.getMonthFirstDate()
-        this.query3.endTime = dateObj.getNextMonthFirstDate()
         const {
           data: res
         } =
         await uni.$http.get('/flow/newCountLine', this.query3)
+        this.upCounts3 = countObj.addDay(res.data.countLineFlowIn)
+        this.downCounts3 = countObj.addDay(res.data.countLineFlowOut)
+        this.monthCounts = this.upCounts3 + this.downCounts3
         console.log(res)
         if (res.code === -1) {
           this.status = res.message
@@ -327,17 +307,6 @@
           ]
         };
         this.chartData3 = JSON.parse(JSON.stringify(dataObj));
-      },
-      async getDayFlowCounts() {
-        const {
-          data: res
-        } = await uni.$http.get('/flow/countNowUnitFlowApplet', {
-          unitGuid: '584bb4c000cc4d6c87fa1ce8d6754666'
-        })
-        if (res.code !== 200) return uni.$showMsg('获取流量统计失败！')
-        this.dayFlowCounts.upFlow = res.data.in
-        this.dayFlowCounts.downFlow = res.data.out
-        // console.log(this.dayFlowCounts)
       }
     }
   };
@@ -351,24 +320,6 @@
       font-size: 20px;
       font-weight: 700;
       margin: 10px 0 20px 0;
-    }
-
-    .count-flow {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-      padding: 10px 0;
-      border-bottom: 1px solid #efefef;
-
-      .Flow-content {
-        font-size: 13px;
-
-        .flow-m-r {
-          margin-right: 20px;
-        }
-      }
-
     }
 
     .content {
@@ -388,5 +339,6 @@
         height: 300px;
       }
     }
+
   }
 </style>

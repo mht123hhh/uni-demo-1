@@ -1,0 +1,18 @@
+{
+    "id": "ir-tabs",
+    "name": "ir-tabs tabs tab选项卡组件",
+    "version": "1.0.3",
+    "description": "用于展示同一页面不同标题下内容，可通过左右滑动和点击tab的方式切换页面，支持自定义颜色、下拉刷新",
+    "keywords": [
+        "tab",
+        "tabs",
+        "选项卡",
+        "导航栏"
+    ],
+    "dcloudext": {
+        "category": [
+            "前端组件",
+            "通用组件"
+        ]
+    }
+}

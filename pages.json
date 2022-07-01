@@ -1,31 +1,70 @@
 {
   "pages": [{
     "path": "pages/home/home",
-    "style": {}
+    "style": {
+      "navigationBarTitleText": "我的流量",
+      "pageOrientation": "auto"
+    }
+  }, {
+    "path": "pages/list/list",
+    "style": {
+      "navigationBarTitleText": "客户信息列表",
+      "enablePullDownRefresh": false
+    }
   }, {
     "path": "pages/my/my",
-    "style": {}
+    "style": {
+      "navigationBarTitleText": "个人中心"
+    }
+  }, {
+    "path": "pages/test/test",
+    "style": {
+      "pageOrientation": "auto"
+    }
+  }],
+  "subPackages": [{
+    "root": "subpkg",
+    // 表示当前包下有多少个页面
+    "pages": [{
+      "path": "clientFlow_detail/clientFlow_detail",
+      "style": {
+        "navigationBarTitleText": "客户流量监控",
+        "pageOrientation": "auto"
+      }
+    }, {
+      "path": "search/search",
+      "style": {
+        "navigationBarTitleText": "",
+        "enablePullDownRefresh": false
+      }
 
+    }]
   }],
   "globalStyle": {
     "navigationBarTextStyle": "white",
-    "navigationBarTitleText": "流量监控",
+    "navigationBarTitleText": "微wan",
     "navigationBarBackgroundColor": "#1C6CFF",
     "backgroundColor": "#FFFFFF"
-
   },
   "tabBar": {
+    "selectedColor": "#1C6CFF",
     "list": [{
         "pagePath": "pages/home/home",
-        "text": "首页",
-        "iconPath": "static/tab_icons/home.png",
-        "selectedIconPath": "static/tab_icons/home-active.png"
+        "text": "主机",
+        "iconPath": "static/tab_icons/zhuji.png",
+        "selectedIconPath": "static/tab_icons/zhuji-active.png"
+      },
+      {
+        "pagePath": "pages/list/list",
+        "text": "客户",
+        "iconPath": "static/tab_icons/kehu.png",
+        "selectedIconPath": "static/tab_icons/kehu-active.png"
       },
       {
         "pagePath": "pages/my/my",
         "text": "我的",
-        "iconPath": "static/tab_icons/my.png",
-        "selectedIconPath": "static/tab_icons/my-active.png"
+        "iconPath": "static/tab_icons/wo.png",
+        "selectedIconPath": "static/tab_icons/wo-active.png"
       }
     ]
   }

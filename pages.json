@@ -1,27 +1,31 @@
 {
-  "pages": [{
-    "path": "pages/home/home",
-    "style": {
-      "navigationBarTitleText": "我的流量",
-      "pageOrientation": "auto"
+  "pages": [
+    // {
+    //   "path": "pages/list/list",
+    //   "style": {
+    //     "navigationBarTitleText": "客户信息列表",
+    //     "enablePullDownRefresh": false
+    //   }
+    // }, 
+    {
+      "path": "pages/my/my",
+      "style": {
+        "navigationBarTitleText": "个人中心"
+      }
+    },
+    {
+      "path": "pages/home/home",
+      "style": {
+        "navigationBarTitleText": "我的流量",
+        "pageOrientation": "auto"
+      }
+    }, {
+      "path": "pages/test/test",
+      "style": {
+        "pageOrientation": "auto"
+      }
     }
-  }, {
-    "path": "pages/list/list",
-    "style": {
-      "navigationBarTitleText": "客户信息列表",
-      "enablePullDownRefresh": false
-    }
-  }, {
-    "path": "pages/my/my",
-    "style": {
-      "navigationBarTitleText": "个人中心"
-    }
-  }, {
-    "path": "pages/test/test",
-    "style": {
-      "pageOrientation": "auto"
-    }
-  }],
+  ],
   "subPackages": [{
     "root": "subpkg",
     // 表示当前包下有多少个页面
@@ -54,12 +58,12 @@
         "iconPath": "static/tab_icons/zhuji.png",
         "selectedIconPath": "static/tab_icons/zhuji-active.png"
       },
-      {
-        "pagePath": "pages/list/list",
-        "text": "客户",
-        "iconPath": "static/tab_icons/kehu.png",
-        "selectedIconPath": "static/tab_icons/kehu-active.png"
-      },
+      // {
+      //   "pagePath": "pages/list/list",
+      //   "text": "客户",
+      //   "iconPath": "static/tab_icons/kehu.png",
+      //   "selectedIconPath": "static/tab_icons/kehu-active.png"
+      // },
       {
         "pagePath": "pages/my/my",
         "text": "我的",

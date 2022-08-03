@@ -12,7 +12,7 @@ import {
 uni.$http = $http
 // $http.baseUrl = 'http://127.0.0.1:8081'
 // $http.baseUrl = 'http://1.15.78.149:18080/mini'
-$http.baseUrl = 'https://user.xiaomoto.cn/mini/'
+$http.baseUrl = 'https://user.xiaomoto.cn/mini'
 
 // 封装弹窗
 uni.$showMsg = function(title = '数据请求失败！', duration = 1500) {
@@ -22,6 +22,7 @@ uni.$showMsg = function(title = '数据请求失败！', duration = 1500) {
     icon: 'none'
   })
 }
+
 
 Vue.config.productionTip = false
 

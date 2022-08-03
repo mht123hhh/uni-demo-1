@@ -1,5 +1,5 @@
 <template>
-  <view class="container-box">
+  <view class="container-box" v-if="token">
     <view class="title">
       <text>流量情况</text>
     </view>
@@ -50,6 +50,7 @@
         <view class="week-flow">
           <view class="client-box">
             <view class="client-name">
+              宁波驰恩国际有限公司
               {{status==='设备离线'?fullName + '  ('+ status +')':fullName}}
             </view>
           </view>
@@ -64,6 +65,7 @@
         <view class="month-flow">
           <view class="client-box">
             <view class="client-name">
+              宁波驰恩国际有限公司
               {{status==='设备离线'?fullName + '  ('+ status +')':fullName}}
             </view>
           </view>
@@ -80,9 +82,16 @@
 <script>
   // import countObj from '@/common/calculate.js'
   import dateObj from '@/common/datefilter.js'
+  import {
+    mapState
+  } from "vuex"
   export default {
+    computed: {
+      ...mapState('m_user', ['token'])
+    },
     data() {
       return {
+        time: null,
         timer: null,
         items: ['一天', '一周', '一个月'],
         current: 0,
@@ -164,7 +173,7 @@
           dataPointShape: false, // 数据图形
           xAxis: {
             disableGrid: true,
-            labelCount: 7
+            labelCount: 6
           },
           yAxis: {
             data: [{
@@ -194,30 +203,40 @@
         }
       }
     },
-    watch: {
-      // dayCounts(newValue, oldValue) {
-      //   this.dayCounts = newValue
-      //   // console.log(newValue + '---' + oldValue)
-      // }
+    // 点击tab触发
+    onTabItemTap() {
+      if (!this.$store.state.m_user.token) {
+        this.time = setTimeout(() => {
+          uni.switchTab({
+            url: '/pages/my/my'
+          })
+        }, 2000)
+        return uni.$showMsg('请先登录！', 3000)
+      }
     },
-    onReady() {},
     onLoad() {
       this.getDayflow()
       this.getWeekflow()
       this.getMonthflow()
       this.getDayFlowCounts()
-      // this.timer = setInterval(() => {
-      //   this.getDayflow()
-      //   // this.getWeekflow()
-      //   // this.getMonthflow()
-      //   this.getDayFlowCounts()
-      // }, 30000)
-      // this.startTimer()
     },
     onHide() {
       clearInterval(this.timer)
     },
     onShow() {
+      // console.log(this.$store.state.m_user.token)
+      // if (!this.$store.state.m_user.token) {
+      //   this.time = setTimeout(() => {
+      //     uni.switchTab({
+      //       url: '/pages/my/my'
+      //     })
+      //   }, 2000)
+      //   uni.$showMsg('请先登录！', 3000)
+      // }
+      /* this.getDayflow()
+       this.getWeekflow()
+       this.getMonthflow()
+       this.getDayFlowCounts() */
       this.startTimer()
     },
     methods: {
@@ -252,7 +271,7 @@
         // // 2022-06-17 22:10:33 => 2022-06-17 00:00:00
         const date = dateObj.dateFormat2(new Date())
         let categories = [date].concat(res.data.dateCreated)
-        console.log(res)
+        console.log(res, 'day')
         if (res.code === -1) {
           this.status = res.message
           this.errorShow = true
@@ -280,7 +299,7 @@
           data: res
         } =
         await uni.$http.get('/flow/newCountLine', this.query2)
-        console.log(res)
+        console.log(res, 'week')
         if (res.code === -1) {
           this.status = res.message
           this.errorShow = true
@@ -308,7 +327,7 @@
           data: res
         } =
         await uni.$http.get('/flow/newCountLine', this.query3)
-        console.log(res)
+        console.log(res, 'month')
         if (res.code === -1) {
           this.status = res.message
           this.errorShow = true
